@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Новости Тинькофф</string>
+    <string name="loading">Загрузка</string>
+    <string name="loading_description">Пожалуйста, подождите</string>
+    <string name="no_data">Нет данных</string>
 </resources>
