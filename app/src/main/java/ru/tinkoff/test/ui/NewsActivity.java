@@ -67,8 +67,8 @@ public class NewsActivity extends BaseActivity implements NewsAdapter.OnItemClic
 
     @Override
     public void onClick(NewsTitle newsTitle) {
-        Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.EXTRA_NEWS_ID, newsTitle.getId());
+        Intent intent = new Intent(this, NewsContentActivity.class);
+        intent.putExtra(NewsContentActivity.EXTRA_NEWS_ID, newsTitle.getId());
         startActivity(intent);
     }
 
@@ -80,7 +80,7 @@ public class NewsActivity extends BaseActivity implements NewsAdapter.OnItemClic
     }
 
     private void loadData(boolean forceReload) {
-        NewsRepository.getInstance().getNews(forceReload)
+        NewsRepository.getInstance(this).getNews(this, forceReload)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleSubscriber<List<News>>() {

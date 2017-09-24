@@ -7,13 +7,19 @@ public class Date {
     private static final String KEY_MILLIS = "milliseconds";
 
     @SerializedName(KEY_MILLIS)
-    private long milliseconds;
+    private long mMilliseconds;
+
+    public Date() {}
+
+    public Date(long milliseconds) {
+        mMilliseconds = milliseconds;
+    }
 
     public long getMilliseconds() {
-        return milliseconds;
+        return mMilliseconds;
     }
 
     public void setMilliseconds(long milliseconds) {
-        this.milliseconds = milliseconds;
+        this.mMilliseconds = milliseconds;
     }
 }

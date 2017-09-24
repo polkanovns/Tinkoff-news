@@ -1,4 +1,4 @@
-package ru.tinkoff.test.data;
+package ru.tinkoff.test.data.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

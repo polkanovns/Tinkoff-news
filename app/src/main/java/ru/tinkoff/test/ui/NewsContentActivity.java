@@ -2,21 +2,18 @@ package ru.tinkoff.test.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 
 import ru.tinkoff.test.R;
-import ru.tinkoff.test.data.News;
 import ru.tinkoff.test.data.NewsRepository;
 import rx.SingleSubscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class DetailsActivity extends BaseActivity {
-    private static final String TAG = "DetailsActivity";
+public class NewsContentActivity extends BaseActivity {
+    private static final String TAG = "NewsContentActivity";
 
     public static final String EXTRA_NEWS_ID = "news_id";
 
@@ -60,13 +57,13 @@ public class DetailsActivity extends BaseActivity {
     private void loadData(String id) {
         showProgressDialog();
 
-        NewsRepository.getInstance().getNewsDetails(id)
+        NewsRepository.getInstance(this).getNewsContent(this, id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleSubscriber<News>() {
+                .subscribe(new SingleSubscriber<String>() {
                     @Override
-                    public void onSuccess(News news) {
-                        mWebView.loadDataWithBaseURL(null, news.getContent(), HTML_MIME, HTML_ENCODING, null);
+                    public void onSuccess(String content) {
+                        mWebView.loadDataWithBaseURL(null, content, HTML_MIME, HTML_ENCODING, null);
                         hideProgressDialog();
                         hideNoDataText();
                     }

@@ -20,7 +20,7 @@
         </activity>
 
         <activity
-            android:name=".ui.DetailsActivity">
+            android:name=".ui.NewsContentActivity">
         </activity>
 
     </application>

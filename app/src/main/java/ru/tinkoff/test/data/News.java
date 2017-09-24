@@ -31,6 +31,14 @@ public class News {
     @SerializedName(KEY_TYPE_ID)
     private String mTypeId;
 
+    public News() {}
+
+    public News(String id, String name, String titleText, long publicationDateMillis, String content, int bankInfoTypeId) {
+        mTitle = new NewsTitle(id, name, titleText, publicationDateMillis, bankInfoTypeId);
+        mBankInfoTypeId = bankInfoTypeId;
+        mContent = content;
+    }
+
     public NewsTitle getTitle() {
         return mTitle;
     }
