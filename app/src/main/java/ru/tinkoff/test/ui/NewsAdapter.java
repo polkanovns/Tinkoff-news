@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +20,19 @@ import ru.tinkoff.test.data.NewsTitle;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewHolder> {
     private ArrayList<News> mNews;
 
+    private OnItemClickListener mClickListener;
+
     public NewsAdapter(List<News> news) {
+        setNews(news);
+    }
+
+    public void setNews(List<News> news) {
         //copy links to ensure that array won't be changed accidentally
         mNews = new ArrayList<>(news);
+    }
+
+    public void setClickListener(OnItemClickListener clickListener) {
+        mClickListener = clickListener;
     }
 
     @Override
@@ -32,16 +44,21 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewH
 
     @Override
     public void onBindViewHolder(NewsTitleViewHolder holder, int position) {
-        NewsTitle newsTitle = mNews.get(position).getTitle();
+        final NewsTitle newsTitle = mNews.get(position).getTitle();
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (mClickListener != null) {
+                    mClickListener.onClick(newsTitle);
+                }
             }
         });
 
         holder.text.setText(Html.fromHtml(newsTitle.getText()));
+
+        DateTime dateTime = new DateTime(newsTitle.getPublicationDate().getMilliseconds());
+        holder.time.setText(dateTime.toString(holder.itemView.getResources().getString(R.string.date_pattern)));
     }
 
     @Override
@@ -51,11 +68,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewH
 
     public static class NewsTitleViewHolder extends RecyclerView.ViewHolder {
         public TextView text;
+        public TextView time;
 
         public NewsTitleViewHolder(View content) {
             super(content);
 
             text = (TextView) content.findViewById(R.id.text);
+            time = (TextView) content.findViewById(R.id.time);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onClick(NewsTitle newsTitle);
     }
 }

@@ -8,11 +8,11 @@ import java.util.List;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.tinkoff.test.data.network.NewsDetailsResponse;
 import ru.tinkoff.test.data.network.NewsTitlesResponse;
 import ru.tinkoff.test.data.network.TinkoffApi;
 import rx.Single;
 import rx.SingleSubscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class NewsRepository {
@@ -45,20 +45,47 @@ public class NewsRepository {
                 //TODO check connectivity
                 mApi.getNewsTitles()
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(Schedulers.io())
                         .subscribe(new SingleSubscriber<NewsTitlesResponse>() {
 
                             @Override
                             public void onSuccess(NewsTitlesResponse newsTitlesResponse) {
-                                ArrayList<News> newsList;
-
                                 if (newsTitlesResponse.isSuccessful()) {
-                                    newsList = handleNewsTitlesResponse(newsTitlesResponse.getNewsTitles());
+                                    singleSubscriber.onSuccess(
+                                            handleNewsTitlesResponse(newsTitlesResponse.getNewsTitles()));
                                 } else {
-                                    newsList = new ArrayList<>();
+                                    singleSubscriber.onError(
+                                            new RuntimeException("Unable to load news, result code: " + newsTitlesResponse.getResultCode()));
                                 }
+                            }
 
-                                singleSubscriber.onSuccess(newsList);
+                            @Override
+                            public void onError(Throwable e) {
+                                singleSubscriber.onError(e);
+                            }
+                        });
+            }
+        });
+    }
+
+    public Single<News> getNewsDetails(final String id) {
+        return Single.create(new Single.OnSubscribe<News>() {
+            @Override
+            public void call(final SingleSubscriber<? super News> singleSubscriber) {
+                //TODO check connectivity
+                mApi.getNewsDetails(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(new SingleSubscriber<NewsDetailsResponse>() {
+
+                            @Override
+                            public void onSuccess(NewsDetailsResponse newsDetailsResponse) {
+                                if (newsDetailsResponse.isSuccessful()) {
+                                    singleSubscriber.onSuccess(newsDetailsResponse.getNews());
+                                } else {
+                                    singleSubscriber.onError(
+                                            new RuntimeException("Unable to load news, result code: " + newsDetailsResponse.getResultCode()));
+                                }
                             }
 
                             @Override

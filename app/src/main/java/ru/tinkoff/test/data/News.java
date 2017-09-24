@@ -1,6 +1,8 @@
 package ru.tinkoff.test.data;
 
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class News {
@@ -41,7 +43,7 @@ public class News {
         mContent = content;
     }
 
-    public Date getCreationDate() {
+    public @Nullable Date getCreationDate() {
         return mCreationDate;
     }
 
@@ -49,7 +51,7 @@ public class News {
         mCreationDate = creationDate;
     }
 
-    public String getTypeId() {
+    public @Nullable String getTypeId() {
         return mTypeId;
     }
 
@@ -58,7 +60,6 @@ public class News {
     }
 
     public int getBankInfoTypeId() {
-
         return mBankInfoTypeId;
     }
 
@@ -66,8 +67,7 @@ public class News {
         mBankInfoTypeId = bankInfoTypeId;
     }
 
-    public Date getLastModificationDate() {
-
+    public @Nullable Date getLastModificationDate() {
         return mLastModificationDate;
     }
 
@@ -75,8 +75,7 @@ public class News {
         mLastModificationDate = lastModificationDate;
     }
 
-    public String getContent() {
-
+    public @Nullable String getContent() {
         return mContent;
     }
 }
