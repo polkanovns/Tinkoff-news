@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="no_data_text_size">20sp</dimen>
+    <dimen name="list_item_time_size">12sp</dimen>
+    <dimen name="list_item_time_margin">4dp</dimen>
+    <dimen name="list_item_text_size">16sp</dimen>
+    <dimen name="list_item_text_margin">12dp</dimen>
+    <dimen name="list_item_padding">8dp</dimen>
+</resources>
