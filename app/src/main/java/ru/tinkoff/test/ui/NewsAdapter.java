@@ -18,17 +18,17 @@ import ru.tinkoff.test.data.NewsTitle;
 
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewHolder> {
-    private ArrayList<News> mNews;
+    private ArrayList<NewsTitle> mNewsTitles;
 
     private OnItemClickListener mClickListener;
 
-    public NewsAdapter(List<News> news) {
-        setNews(news);
+    public NewsAdapter(List<NewsTitle> newsTitles) {
+        setNewsTitles(newsTitles);
     }
 
-    public void setNews(List<News> news) {
+    public void setNewsTitles(List<NewsTitle> newsTitles) {
         //copy links to ensure that array won't be changed accidentally
-        mNews = new ArrayList<>(news);
+        mNewsTitles = new ArrayList<>(newsTitles);
     }
 
     public void setClickListener(OnItemClickListener clickListener) {
@@ -44,7 +44,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewH
 
     @Override
     public void onBindViewHolder(NewsTitleViewHolder holder, int position) {
-        final NewsTitle newsTitle = mNews.get(position).getTitle();
+        final NewsTitle newsTitle = mNewsTitles.get(position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +63,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsTitleViewH
 
     @Override
     public int getItemCount() {
-        return mNews.size();
+        return mNewsTitles.size();
     }
 
     public static class NewsTitleViewHolder extends RecyclerView.ViewHolder {

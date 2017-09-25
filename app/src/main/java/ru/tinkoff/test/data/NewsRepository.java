@@ -3,7 +3,6 @@ package ru.tinkoff.test.data;
 import android.content.Context;
 import android.text.TextUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,10 +46,10 @@ public class NewsRepository {
         return sInstance;
     }
 
-    public Single<List<News>> getNews(final Context context, final boolean reload) {
-        return Single.create(new Single.OnSubscribe<List<News>>() {
+    public Single<List<NewsTitle>> getNewsTitles(final Context context, final boolean reload) {
+        return Single.create(new Single.OnSubscribe<List<NewsTitle>>() {
             @Override
-            public void call(final SingleSubscriber<? super List<News>> singleSubscriber) {
+            public void call(final SingleSubscriber<? super List<NewsTitle>> singleSubscriber) {
                 if (Utils.isNetworkConnectionAvailable(context) && reload) {
                     mApi.getNewsTitles()
                             .subscribeOn(Schedulers.io())
@@ -60,11 +59,11 @@ public class NewsRepository {
                                 @Override
                                 public void onSuccess(NewsTitlesResponse newsTitlesResponse) {
                                     if (newsTitlesResponse.isSuccessful()) {
-                                        List<News> newsList = handleNewsTitlesResponse(newsTitlesResponse.getNewsTitles());
+                                        List<NewsTitle> titles = handleNewsTitlesResponse(newsTitlesResponse.getNewsTitles());
 
-                                        mNewsCache.saveNewsNonBlocking(newsList);
+                                        mNewsCache.saveNewsTitlesNonBlocking(titles);
 
-                                        singleSubscriber.onSuccess(newsList);
+                                        singleSubscriber.onSuccess(titles);
                                     } else {
                                         singleSubscriber.onError(
                                                 new RuntimeException("Unable to load news, result code: " + newsTitlesResponse.getResultCode()));
@@ -77,15 +76,15 @@ public class NewsRepository {
                                 }
                             });
                 } else {
-                    List<News> newsList = mNewsCache.getNewsList();
-                    if (newsList != null && newsList.size() > 0) {
-                        singleSubscriber.onSuccess(newsList);
+                    List<NewsTitle> titles = mNewsCache.getNewsTitles();
+                    if (titles != null && titles.size() > 0) {
+                        singleSubscriber.onSuccess(titles);
 
                     } else {
                         //news aren't loaded yet, try to restore them
-                        newsList = mNewsCache.restoreNewsBlocking();
-                        if (newsList != null && newsList.size() > 0) {
-                            singleSubscriber.onSuccess(newsList);
+                        titles = mNewsCache.restoreNewsTitlesBlocking();
+                        if (titles != null && titles.size() > 0) {
+                            singleSubscriber.onSuccess(titles);
 
                         } else {
                             singleSubscriber.onError(
@@ -140,9 +139,7 @@ public class NewsRepository {
         });
     }
 
-    private ArrayList<News> handleNewsTitlesResponse(List<NewsTitle> titles) {
-        ArrayList<News> newsList = new ArrayList<>();
-
+    private List<NewsTitle> handleNewsTitlesResponse(List<NewsTitle> titles) {
         // There are many duplicates, we filter bigger part, but for now it's hard to formalize all cases
         NewsFilter.filter(titles);
 
@@ -157,14 +154,6 @@ public class NewsRepository {
             }
         });
 
-        for (NewsTitle newsTitle : titles) {
-            News news = new News();
-            news.setTitle(newsTitle);
-            news.setBankInfoTypeId(newsTitle.getBankInfoTypeId());
-
-            newsList.add(news);
-        }
-
-        return newsList;
+        return titles;
     }
 }

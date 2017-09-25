@@ -23,7 +23,7 @@ public class NewsCache {
     private static final String TAG = "NewsCache";
 
     private SQLiteDatabase mDatabase;
-    private List<News> mNewsList;
+    private List<NewsTitle> mNewsTitles;
     private HashMap<String, String> mContentsMap = new HashMap<>();
     private boolean mIsNewsContentsRestored = false;
 
@@ -31,12 +31,11 @@ public class NewsCache {
         mDatabase = new CacheOpenHelper(context.getApplicationContext()).getWritableDatabase();
     }
 
-    public void saveNewsBlocking(List<News> newsList) {
+    public void saveNewsTitlesBlocking(List<NewsTitle> newsTitles) {
         ContentValues values = new ContentValues();
 
-        for (News news : newsList) {
+        for (NewsTitle title : newsTitles) {
             values.clear();
-            NewsTitle title = news.getTitle();
 
             values.put(CacheDB.TitlesCache.ID, title.getId());
             values.put(CacheDB.TitlesCache.NAME, title.getName());
@@ -46,16 +45,16 @@ public class NewsCache {
 
             mDatabase.insertWithOnConflict(CacheDB.TitlesCache.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         }
-        Log.d(TAG, newsList.size() + " news saved");
+        Log.d(TAG, newsTitles.size() + " news saved");
     }
 
-    public void saveNewsNonBlocking(final List<News> newsList) {
-        mNewsList = newsList;
+    public void saveNewsTitlesNonBlocking(final List<NewsTitle> newsTitles) {
+        mNewsTitles = newsTitles;
 
         Single.create(new Single.OnSubscribe<News>() {
             @Override
             public void call(final SingleSubscriber<? super News> singleSubscriber) {
-                saveNewsBlocking(newsList);
+                saveNewsTitlesBlocking(newsTitles);
             }
         }).subscribeOn(Schedulers.io())
                 .subscribe();
@@ -105,8 +104,8 @@ public class NewsCache {
         return mContentsMap;
     }
 
-    public ArrayList<News> restoreNewsBlocking() {
-        ArrayList<News> newsList = new ArrayList<>();
+    public ArrayList<NewsTitle> restoreNewsTitlesBlocking() {
+        ArrayList<NewsTitle> newsTitles = new ArrayList<>();
 
         Cursor c = mDatabase.query(CacheDB.TitlesCache.TABLE_NAME, null,
                 null, null, null, null, CacheDB.TitlesCache.PUBLICATION_DATE + " DESC");
@@ -114,12 +113,11 @@ public class NewsCache {
         try {
             if (c.getCount() != 0) {
                 while (c.moveToNext()) {
-                    newsList.add(new News(
+                    newsTitles.add(new NewsTitle(
                             c.getString(c.getColumnIndex(CacheDB.TitlesCache.ID)),
                             c.getString(c.getColumnIndex(CacheDB.TitlesCache.NAME)),
                             c.getString(c.getColumnIndex(CacheDB.TitlesCache.TEXT)),
                             c.getLong(c.getColumnIndex(CacheDB.TitlesCache.PUBLICATION_DATE)),
-                            null,
                             c.getInt(c.getColumnIndex(CacheDB.TitlesCache.BANK_INFO_TYPE_ID))));
                 }
             }
@@ -127,23 +125,23 @@ public class NewsCache {
             c.close();
         }
 
-        Log.d(TAG, newsList.size() + " news restored");
-        mNewsList = newsList;
+        Log.d(TAG, newsTitles.size() + " news restored");
+        mNewsTitles = newsTitles;
 
-        return newsList;
+        return newsTitles;
     }
 
-    public Single<List<News>> restoreNewsNonBlocking(final List<News> newsList) {
-        return Single.create(new Single.OnSubscribe<List<News>>() {
+    public Single<List<NewsTitle>> restoreNewsTitlesNonBlocking() {
+        return Single.create(new Single.OnSubscribe<List<NewsTitle>>() {
             @Override
-            public void call(final SingleSubscriber<? super List<News>> singleSubscriber) {
-                saveNewsBlocking(newsList);
+            public void call(final SingleSubscriber<? super List<NewsTitle>> singleSubscriber) {
+                singleSubscriber.onSuccess(restoreNewsTitlesBlocking());
             }
         });
     }
 
-    public List<News> getNewsList() {
-        return mNewsList;
+    public List<NewsTitle> getNewsTitles() {
+        return mNewsTitles;
     }
 
     public boolean isNewsContentsRestored() {
