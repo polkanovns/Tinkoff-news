@@ -46,7 +46,7 @@ public class NewsActivity extends BaseActivity implements NewsAdapter.OnItemClic
         });
 
         // Add dummy adapter to make sure that recycler view will pass layout stage
-        mAdapter = new NewsAdapter(new ArrayList<News>());
+        mAdapter = new NewsAdapter(new ArrayList<NewsTitle>());
         mAdapter.setClickListener(this);
 
         mNewsRecycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -80,13 +80,13 @@ public class NewsActivity extends BaseActivity implements NewsAdapter.OnItemClic
     }
 
     private void loadData(boolean forceReload) {
-        NewsRepository.getInstance(this).getNews(this, forceReload)
+        NewsRepository.getInstance(this).getNewsTitles(this, forceReload)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleSubscriber<List<News>>() {
+                .subscribe(new SingleSubscriber<List<NewsTitle>>() {
                     @Override
-                    public void onSuccess(List<News> news) {
-                        mAdapter.setNews(news);
+                    public void onSuccess(List<NewsTitle> news) {
+                        mAdapter.setNewsTitles(news);
                         mAdapter.notifyDataSetChanged();
 
                         mNewsRefresh.setRefreshing(false);
